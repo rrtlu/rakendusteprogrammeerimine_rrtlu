@@ -1,0 +1,58 @@
+:root {
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+body {
+  margin: 0;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.container {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.site-header {
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 1rem 1.5rem;
+}
+
+.site-header a {
+  color: #f8fafc;
+  margin-right: 1rem;
+}
+
+.page-section {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.task-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.task-card--done .task-card__title {
+  text-decoration: line-through;
+}
+
+.task-form__error {
+  color: #b91c1c;
+}
+
+.button {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.35rem;
+  background: #fff;
+  cursor: pointer;
+}
