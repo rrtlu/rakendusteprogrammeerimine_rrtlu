@@ -1,0 +1,37 @@
+1. Video summaries
+
+1.1 Philip Roberts — "What the heck is the event loop anyway?" (JSConf EU 2014)
+
+Content: Roberts builds a live visual simulation of the JS runtime and shows that JavaScript is single-threaded: one call stack and one task queue. He explains that setTimeout does not run code "after X ms" — it only registers a callback, and the browser's Web API holds the timer; when the timer fires, the callback goes into the queue and runs only once the stack is empty. The event loop is the only thing that moves items from the queue onto the stack. He demonstrates how blocking code (e.g. while (true)) freezes the entire page, because the event loop can never process the queue.
+
+What I learned:
+
+The event loop is not part of the JavaScript language — it's a mechanism of the host environment (browser, Node).
+setTimeout(fn, 0) doesn't mean "immediately"; it means "after the stack has drained and the tasks ahead of it are done".
+Rendering happens on the same thread, so slow synchronous code equals a frozen UI. That's also why heavy work has to be chunked or moved to a worker thread.
+Stack overflow comes from endless recursion, not from asynchronous code.
+----------------------------------------------------
+1.2 Shelley Vohr — "Asynchrony: Under the Hood" (JSConf EU 2018)
+Content: Vohr takes on every async pattern in JS (callbacks, promises, generators and async/await) and looks at how each one actually works at the engine level: how values travel through the stack and the event loop, where intermediate values get lost, and how each method propagates errors. She shows that promises and async/await are not "faster" code, only a more readable way of doing the same thing, and that async/await hides a whole set of traps (errors that vanish when you forget await, and sequential waiting that turns parallel code into slow code). She also touches on where asynchrony is heading in the future.
+
+What I learned:
+
+Callbacks are the oldest and lowest-level solution- flexible, but error propagation and sequencing are manual and break easily ("callback hell").
+A promise is an object with states pending → fulfilled/rejected; await only pauses the function and throws back to the promise (it does not block the thread).
+If you forget await, you get a promise object instead of a value and the error quietly disappears  (a classic silent bug).
+await inside a loop makes things slow; for parallelism you need Promise.all().
+try/catch only works where you actually await; everywhere else you need .catch().
+----------------------------------------------------
+1.3 My pick: Jake Archibald — "In The Loop" (JSConf.Asia 2018)
+
+Content: Archibald goes into the details of the event loop that the first video only brushed against: the task queue versus the microtask queue, the rendering step, and requestAnimationFrame. He shows that promise callbacks are microtasks and run before rendering and before the next setTimeout. An endless chain of microtasks means the browser never renders at all. He explains why setTimeout in a loop renders badly and why requestAnimationFrame is the right place for animations.
+
+What I learned:
+
+There are two separate queues with different priority: microtasks (Promise.then, queueMicrotask) are drained completely before rendering or the next macrotask ever gets a turn.
+Because of that, Promise.resolve().then(...) calling itself recursively can starve rendering and the whole page.
+requestAnimationFrame runs right before rendering and is meant for exactly this kind of visual work; setTimeout(..., 0) in a loop makes animations jitter.
+DOM changes are batched and applied during rendering, so several consecutive style changes in the same task don't cause several renders.
+Takeaway across all three: asynchrony isn't "faster", it's a way of not blocking. Together the three talks gave a clear picture of why the queue and the stack matter at all — and why await in a loop can be slower than firing requests in parallel.
+----------------------------------------------------
+
